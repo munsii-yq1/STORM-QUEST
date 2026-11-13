@@ -1,0 +1,167 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>STORM QUEST</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#102b49">
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}
+  </script>
+</head>
+<body>
+<main>
+
+  <section id="homeScreen" class="screen active home">
+    <div class="home-cloud cloud-one"></div>
+    <div class="home-cloud cloud-two"></div>
+    <div class="home-content">
+      <p class="eyebrow">A WEATHER ADVENTURE</p>
+      <h1 class="logo">STORM <span>QUEST</span></h1>
+      <div class="home-aircraft" aria-label="STORM QUEST rescue aircraft">✈️<span>CREWMATE PILOT ON BOARD</span></div>
+      <p class="home-description">
+        Take flight, explore the skies and discover the science behind
+        pressure, winds, storms and cyclones!
+      </p>
+      <button class="start-orb" onclick="showScreen('levelScreen')">
+        <span>START</span>
+        <small>ADVENTURE</small>
+      </button>
+      <p class="home-hint">Two missions · One brave pilot · Endless skies</p>
+      <button class="teacher-link" onclick="showHowToPlay()">❓ HOW TO PLAY</button>
+      <button class="teacher-link" onclick="showTeacherDashboard()">👩‍🏫 TEACHER DASHBOARD</button>
+      <button class="teacher-link" onclick="showAnswerKey()">🔑 ANSWER KEY</button>
+    </div>
+  </section>
+
+  <section id="levelScreen" class="screen level-screen">
+    <p class="eyebrow">YOUR JOURNEY BEGINS</p>
+    <h1>CHOOSE YOUR MISSION</h1>
+    <p class="subtitle">Learn the sky. Brave the weather.</p>
+
+    <div class="level-grid">
+      <article class="level-card pressure-card">
+        <div class="level-symbol">🌤️</div>
+        <p class="level-number">MISSION 01</p>
+        <h2>Sky of Secrets</h2>
+        <p>Discover air pressure, winds, sea breeze and land breeze.</p>
+        <button onclick="startLevel(1)">PLAY LEVEL 1</button>
+      </article>
+
+      <article class="level-card storm-card">
+        <div class="level-symbol">🌪️</div>
+        <p class="level-number">MISSION 02</p>
+        <h2>Eye of the Storm</h2>
+        <p>Explore thunderstorms, lightning, storms and cyclones.</p>
+        <button onclick="startLevel(2)">PLAY LEVEL 2</button>
+      </article>
+    </div>
+    <button class="secondary-button" onclick="showHowToPlay()">❓ HOW TO PLAY</button>
+    <button class="secondary-button" onclick="showScreen('homeScreen')">← HOME</button>
+  </section>
+
+  <section id="gameScreen" class="screen game-screen">
+    <header class="game-header">
+      <div>
+        <p class="eyebrow">STORM QUEST</p>
+        <h2 id="levelTitle">SKY OF SECRETS</h2>
+        <p id="levelSubtitle">Pressure & Winds</p>
+      </div>
+      <div class="hud">
+        <div class="hud-pill">⭐ <span id="score">0</span></div>
+        <div class="hud-pill lives-pill">❤️ <span id="lives">3</span></div>
+        <button class="hud-pill hud-btn" id="pauseButton" onclick="togglePause()" aria-label="Pause game">⏸</button>
+        <button class="hud-pill hud-btn" id="soundButton" onclick="toggleSound()" aria-label="Mute sound">🔊</button>
+      </div>
+    </header>
+
+    <div class="canvas-wrap" id="canvasWrap">
+      <canvas id="gameCanvas" width="1000" height="520"></canvas>
+      <div id="aircraftLoading">Preparing aircraft…</div>
+      <div id="warningFlash" class="warning-flash">
+        <div class="warning-content">
+          <span class="warning-symbol">⚠</span>
+          <strong id="warningTitle">WEATHER WARNING!</strong>
+          <span id="warningText"></span>
+        </div>
+      </div>
+      <div id="factToast" class="fact-toast"></div>
+      <div id="hitFlash" class="hit-flash"></div>
+      <div id="countdown" class="countdown"></div>
+      <div id="pauseOverlay" class="pause-overlay"><div class="pause-card"><h2>⏸ PAUSED</h2><p>Take a breath, pilot.</p><button class="lesson-resume" onclick="resumeGame()">RESUME FLIGHT</button></div></div>
+    </div>
+
+    <div class="game-footer">
+      <p>⬆ UP ARROW / W: FLY UP &nbsp; · &nbsp; ⬇ DOWN ARROW / S: FLY DOWN &nbsp; · &nbsp; P: PAUSE</p>
+      <div class="touch-controls"><button onpointerdown="holdFlight(-1)" onpointerup="releaseFlight()" onpointerleave="releaseFlight()" onpointercancel="releaseFlight()">▲</button><button onpointerdown="holdFlight(1)" onpointerup="releaseFlight()" onpointerleave="releaseFlight()" onpointercancel="releaseFlight()">▼</button></div>
+      
+    </div>
+  </section>
+
+  <section id="summaryScreen" class="screen result-screen">
+    <div class="result-card">
+      <div class="result-emoji" id="summaryIcon">🌤️</div>
+      <p class="eyebrow">MISSION REPORT</p>
+      <h1 id="summaryTitle">LEVEL COMPLETE!</h1>
+      <p id="summaryScore"></p>
+      <div id="summaryContent" class="learning-content"></div>
+      <button class="main-button" onclick="continueAfterSummary()" id="continueButton">
+        CONTINUE
+      </button>
+    </div>
+  </section>
+
+  <section id="gameOverScreen" class="screen result-screen game-over-screen">
+    <div class="result-card">
+      <div class="result-emoji">💥</div>
+      <p class="eyebrow">FLIGHT REPORT</p>
+      <h1>OUT OF LIVES!</h1>
+      <p>Your aircraft has used all three lives. The adventure has ended.</p>
+      <div class="final-score">⭐ FINAL SCORE: <span id="gameOverScore">0</span></div>
+      <button class="main-button" onclick="restartAdventure()">TRY AGAIN</button>
+      <button class="secondary-button" onclick="showScreen('homeScreen')">HOME</button>
+    </div>
+  </section>
+
+  <section id="resultsScreen" class="screen result-screen">
+    <div class="result-card">
+      <div class="result-emoji">🏆</div>
+      <p class="eyebrow">ALL MISSIONS COMPLETE</p>
+      <h1>SKY EXPLORER!</h1>
+      <p>You have completed both science adventures!</p>
+      <div class="final-score">⭐ TOTAL SCORE: <span id="totalScore">0</span></div>
+      <button class="main-button" onclick="showScreen('creditsScreen')">VIEW CREDITS</button>
+    </div>
+  </section>
+
+  <section id="creditsScreen" class="screen result-screen">
+    <div class="result-card credits-card">
+      <div class="result-emoji">🌎</div>
+      <p class="eyebrow">THE END</p>
+      <h1>STORM QUEST</h1>
+      <h2>Credits & References</h2>
+      <p><strong>Educational reference</strong></p>
+      <p>NCERT Class 8 Science, chapter on Pressure, Winds, Storms and Cyclones.</p>
+      <p><strong>Technical references</strong></p>
+      <ul>
+        <li>MDN Web Docs: HTML</li>
+        <li>MDN Web Docs: CSS</li>
+        <li>MDN Web Docs: JavaScript</li>
+        <li>MDN Web Docs: Canvas API</li>
+      </ul>
+      <p class="credits-note">
+        Original STORM QUEST game design and implementation.
+        Technical documentation used as learning references.
+      </p>
+      <button class="main-button" onclick="restartAdventure()">PLAY AGAIN</button>
+    </div>
+  </section>
+
+</main>
+<script src="game.js"></script>
+<script type="module" src="aircraft-view.js"></script>
+</body>
+</html>
