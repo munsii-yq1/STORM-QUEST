@@ -1,0 +1,9 @@
+{
+  "name": "STORM QUEST",
+  "short_name": "STORM QUEST",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#102b49",
+  "theme_color": "#102b49",
+  "description": "An educational weather adventure for learning pressure, winds, storms and cyclones."
+}
